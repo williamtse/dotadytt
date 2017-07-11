@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% from "macro.html" import follow_btn with context %}
+{% from "macro.html" import movie_list with context %}
+{% from "macro.html" import actor_info with context %}
+{% from "macro.html" import director_info with context %}
+{% from "macro.html" import comment_form with context %}
+{% from "macro.html" import comment_list with context %}
+
+{% block title %}
+    {{ article.title }}|{{ super() }}
+{% endblock %}
+
+{% block container %}
+    <div class="movie-detail">
+        <div class="page-header">
+          <h3><a href="/article/{{ article.id }}">{{ article.title }} <small></small></a></h3>
+        </div>
+        <div class="col-md-8">
+            <div class="article">
+                {{ article.content|safe }}
+                <p style="text-align: right">{% if article.user_id>0 %}
+                    <a href="/profile/{{ article.user.id }}">
+                        <img src="{{ article.user.email|get_avatar('32') }}" class="img-circle">
+                        {{ article.user.name }}
+                    </a>
+                {% endif %}{{ article.created_at }}
+                </p>
+            </div>
+            <h3 class="page-header">评论</h3>
+            <a name="comment-list"></a>
+            <div class="comment-list">
+                {{ comment_list(article.comments(), fbfm, '/article/'+article.id|str) }}
+            </div>
+            <div style="margin-top:15px">
+                {{ comment_form(cmform, article.id, '/article/'+article.id|str+'&type=article#comment-list') }}
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+            <h3 class="head-line">相关电影</h3>
+            {% if article.type=='movie' %}
+                {{ movie_list(article.movies) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+{% from "macro.html" import get_avatar,profile_tabs,user_profile with context %}
+{% from "macro.html" import follow_btn with context %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% from "macro.html" import message_list %}
+
+{% block title %}
+    {{ user.name }} - {{ super() }}
+{% endblock %}
+
+{% block container %}
+    <div class="col-md-2">
+        {{ user_profile(user,current_user) }}
+    </div>
+        <div class="col-md-10" style="padding-right:0;background:white;padding-top:15px">
+          <!-- Nav tabs -->
+          {{ profile_tabs(tab) }}
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="message" style="padding: 15px">
+                <ul>
+                    {{ message_list(user.all_messages().limit(30), current_user) }}
+                </ul>
+            </div>
+          </div>
+    </div>
+
+{% endblock %}

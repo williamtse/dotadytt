@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% from "macro.html" import category_filter,movie_list with context %}
+
+{% block styles %}
+{{ super() }}
+    <link href="/static/css/movie.css" rel="stylesheet">
+{% endblock %}
+
+{% block title %}
+    {{ actor.name }}|{{ super() }}
+{% endblock %}
+
+{% block container %}
+    <h3 class="page-header">{{ actor.name }}</h3>
+    <div class="col-md-9">
+        <div id="actor-info" class="media">
+            <div class="media-left">
+                {% if actor.pic %}
+                <img src="{{ actor.pic }}">
+                {% else %}
+                <img src="/static/img/celebrity-default-medium.png">
+                {% endif %}
+            </div>
+            <div class="media-body">
+                <p><span class="info-label">出生：</span>{{ actor.born }}</p>
+                <p><span class="info-label">简介：</span>{{ actor.info | safe }}</p>
+            </div>
+        </div>
+
+        <div id="movie-list">
+            <h3 class="page-header">演员作品</h3>
+            {{ movie_list(actor.movies,current_user) }}
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        {{ follow_actor(actor.id) }}
+    </div>
+{% endblock %}

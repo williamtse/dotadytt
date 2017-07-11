@@ -1,0 +1,33 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% if current_user.is_authenticated==False %}
+        <div id="login" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-title">
+                    <h3 class="text-center">登录</h3>
+                </div>
+                <div class="modal-body">
+                    {% if form.error %}
+                    <p class="alert  alert-danger">{{ form.error }}</p>
+                    {% endif %}
+
+                    <form id="login-form" class="form" method="post" role="form" onsubmit="return false;">
+                      {{ form.csrf_token }}
+                        <p id="login-error" class="alert alert-danger" style="display: none"></p>
+
+                      {{ wtf.form_field(form.username) }}
+                      {{ wtf.form_field(form.password) }}
+                        <button class="btn btn-block" onclick="ajax_login()">登 录</button>
+                    </form>
+                    <div class="a-divider a-divider-break"><h5>新人?</h5></div>
+                    <a class="btn btn-default btn-block" href="/signup">注册一个账号</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

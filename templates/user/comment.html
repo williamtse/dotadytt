@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+
+{% block container %}
+    <div class="page-header">
+        <a href="/profile/{{ comment.user.id }}">
+            <img src="{{ comment.user.email|get_avatar('32') }}" class="img-circle">
+            <span>{{ comment.user.name }}</span> - {{ comment.created_at|timeago }}
+        </a>
+        {% if comment.type=='movie' %}
+        - <a href="/movie/{{ comment.get_movie().id }}">
+            {{ comment.get_movie().title }}</a>
+        {% endif %}
+    </div>
+
+    <div class="index-page" style="padding: 15px">
+        <p>{{ comment.content }}</p>
+
+        <div class="">
+            <p style="border-bottom: 1px solid #dddddd;">{{ comment.feedbacks|length }}个回复</p>
+            <div>
+                {% for feedback in comment.feedbacks %}
+                <a href="/profile/{{ feedback.user.id }}" >
+                    <img title="{{ feedback.user.name }}" src="{{ feedback.user.email|get_avatar('32') }}" class="img-circle">
+                {{ feedback.user.name }}
+                </a><span>{{ feedback.created_at|timeago }}</span> -
+                    {{ feedback.content }}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-top: 10px">
+            <p style="border-bottom: 1px solid #dddddd;">{{ comment.praises|length }}个赞</p>
+            <div>
+                {% for praise in comment.praises %}
+                    <p>
+                        <a href="/profile/{{ praise.user.id }}">
+                            <img title="{{ praise.user.name }}" src="{{ praise.user.email|get_avatar('32') }}" class="img-circle">
+                            {{ praise.user.name }}
+                        </a> - {{ praise.created_at|timeago }}
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/utils.html" as util %}
+
+{% block styles %}
+    {{ super() }}
+    <link href="/css/login.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+    {{util.flashed_messages(dismissible=True)}}
+        <h3 style="text-align: center;margin-top: 30px;">
+            <a href="/"><strong><span style="color:orangered">DOTA</span>电影天堂</strong></a>
+        </h3>
+        <div class="formbox">
+            <h3>登录</h3>
+            {% if form.error %}
+                <p class="alert  alert-danger">{{ form.error }}</p>
+            {% endif %}
+                <form class="form" method="post" role="form" action="/login{% if url %}?url={{ url }}{% endif %}">
+                  {{ form.csrf_token }}
+                  {{ wtf.form_errors(form, hiddens="only") }}
+
+                  {{ wtf.form_field(form.username) }}
+                  {{ wtf.form_field(form.password) }}
+                    {{ wtf.form_field(form.submit, class="btn btn-block") }}
+                </form>
+            <div class="a-divider a-divider-break"><h5>新人?</h5></div>
+        <a class="btn btn-default btn-block" href="/signup">注册一个账号</a>
+        </div>
+
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% from "macro.html" import article_list with context %}
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/movie.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block container %}
+
+	{% if total>0 %}
+    <div class="col-md-9 index-page">
+
+    {{ article_list(articles) }}
+
+    </div>
+	{% else %}
+        <p class="alert alert-danger">你没有关注任何电影，演员，导演或者用户</p>
+    {% endif %}
+
+	<div id="movie-list-right" class="col-md-3">
+
+	</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+
+    </script>
+{% endblock %}

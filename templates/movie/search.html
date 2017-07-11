@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% from 'macro.html' import render_pagination, order_list, movie_list with context %}
+
+{% block title %}
+{{keyword}}电影{{ super() }}
+{% endblock%}
+
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/movie.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block container %}
+    {% if not keyword == '' %}
+    <h3 style="padding-left:15px">搜索：{{ keyword }}<sup class="tags-del" data-url="/movie/search/"></sup></h3>
+    {% endif %}
+    
+    <div class="col-md-9">
+    {{order_list(url,current_sort_type)}}
+    {{ movie_list(results, current_user) }}
+    <p>
+        {{ render_pagination(pagination, url+current_sort_type+'&') }}
+    </p>
+    </div>
+{% endblock %}

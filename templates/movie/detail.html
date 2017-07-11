@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+{% import "login-modal.html" as login_modal with context %}
+{% from "macro.html" import favorite_btn, area_list,bt_list with context %}
+{% from "macro.html" import comment_form, movie_list with context %}
+{% from "macro.html" import comment_list with context %}
+{% from "macro.html" import download_modal with context %}
+{% from "macro.html" import director_list, actor_list, category_list, recommend, article_list with context %}
+{% from 'macro.html' import rating_star %}
+
+{% block title %}
+    {% if movie.title %}{{ movie.title }}{% else %} {{ movie.name }}({{ movie.year }}) {%endif%}|{{ super() }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+     <link href="/css/movie.css" rel="stylesheet">
+{% endblock %}
+
+{% block container %}
+    <div class="movie-detail">
+        <div class="page-header">
+          <h3><a href="/movie/{{ movie.id }}" class="nodecoration">{% if movie.title %}{{ movie.title }}{% else %} {{ movie.name }}({{ movie.year }}) {%endif%} <small></small></a></h3>
+        </div>
+        <div>
+            <div class="col-md-8 movie-body" style="border-right: 1px solid #ddd">
+                <div class="media">
+                        <img src="/img/mainpic/{{ movie.pic }}" style="margin:0 15px 15px 0;width:300px;float: left">
+                        <p><label>评分：</label>{{ rating_star(movie.rating_num) }}</p>
+                        <p>
+                        <label>地区：</label>
+                                    {{ area_list(movie.areas) }}
+                        </p>
+                        <p>
+                        <label>类型：</label>
+                                    {{ category_list(movie.categories) }}
+                        </p>
+                        <p>
+                            <label>导演：</label>
+                                        {{ director_list(directors) }}
+                        </p>
+                          <p><label>演员：</label>
+                            {{ actor_list(actors) }}
+                          </p>
+                        {% if movie.publish_date%}
+                        <p>
+                            <label>上映时间：</label>{{ movie.publish_date }}
+                        </p>
+                        {% endif %}
+
+                        {% if movie.first_show %}
+                        <p>
+                            <label>首播：</label>{{ movie.first_show }}
+                        </p>
+                        {% endif %}
+
+                        {% if movie.season %}
+                        <p>
+                            <label>季数：</label>{{ movie.season }}
+                        </p>
+                        {% endif %}
+
+                        {% if movie.episode %}
+                        <p>
+                            <label>集数：</label>{{ movie.episode }}
+                        </p>
+                        {% endif %}
+
+                        {% if movie.film_length %}
+                        <p>
+                            <label>单集片长：</label>{{ movie.film_length }}
+                        </p>
+                        {% endif %}
+
+                        <p>
+                            <a name="info"></a>
+                            <label>剧情简介:</label>
+                            <br>{{ movie.info | safe }}
+                        </p>
+                        <p></p>
+                    
+                </div>
+
+                
+
+
+            <a name="bt"></a>
+            <div id="bts">
+                <h3 class="head-line">电影下载</h3>
+                <div>
+                {% if movie.bts.count() >0 %}
+                    {{ bt_list(movie.bts, current_user) }}
+
+                {% else %}
+                        <p style="text-align: center;">还没有这部电影的下载链接，我来添加</p>
+                {% endif %}
+                <p style="text-align: right;"><a href="/movie/addbt/{{movie.id}}"  class="nodecoration">>>> 添加下载链接</a></p>
+                </div>
+            </div>
+
+                <!-- 评论 -->
+                <a name="comment-list"></a>
+                <div id="movie-comments">
+                    <h3 class="head-line">
+                          短评 <small></small></h3>
+                        {{ comment_list(movie.comments(), fbfm, '/movie/'+movie.id|str) }}
+                    <a name="comment"></a>
+                    {% if not movie.imdbid|commented %}
+                    <div class="">
+                        {{ comment_form(cmform, movie.id, '/movie/'+movie.id|str+'?#comment-list') }}
+                    </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        <div class="col-md-4 ">
+
+            <div class="panel panel-default">
+              <div class="panel-body">
+                {{ favorite_btn(movie) }}
+              </div>
+            </div>
+            {% if movie.trailers|count > 0 %}
+            <div class="panel panel-default">
+                <div class="panel-heading">IMDb链接:{{ movie.imdbid }}</div>
+                <div class="panel-body" style="text-align: center">
+                    <a href="http://www.imdb.com/title/{{ movie.imdbid }}" target="_blank">
+                        <img src="/static/img/imdb.png">
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">喜欢这部电影的用户</div>
+                <div class="panel-body">
+                    {% for u in favorites %}
+                        <a href="/profile/{{ u.id }}">
+                          <img width="32" src="{{ u.email|get_avatar }}"
+                               alt="{{ u.name }}" class="img-circle">
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    新闻资讯
+                </div>
+                <div class="panel-body">
+                    {% for a in articles %}
+                    <h3><a href="/article/{{a.id}}">{{a.title}}</a></h3>
+                    <p>{{a.brief}}</p>
+                    {% endfor%}
+                </div>
+            </div>
+
+            {% for subject in subjects %}
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a href="/subject/{{ subject.id }}">{{ subject.name }} 题材电影</a>
+{#                        <a href="/movie/search/?keyword={{ subject.name }}" style="float: right">更多>>></a>#}
+                    </div>
+                    <div class="panel-body">
+                        {{ movie_list(subject.movies, current_user) }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        </div>
+
+    </div>
+    {{ download_modal() }}
+    {{ login_modal }}
+{% endblock %}
+

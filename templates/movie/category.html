@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% from "macro.html" import movie_item, order_list, movie_list with context %}
+{% from 'macro.html' import render_pagination with context %}
+{% block title %}
+{{current_category.name}}电影下载{{ super() }}
+{% endblock%}
+{% block container %}
+    <h3 style="padding-left:15px">分类：{{ current_category.name }}<sup class="tags-del" data-url="/movie/tags"></sup></h3>
+	<div class="col-md-9">
+    {{order_list('/movie/category/'+current_category.id|str+'?sort=',current_sort_type)}}
+    {{ movie_list(results, current_user) }}
+    <p>
+        {{ render_pagination(pagination, '/movie/category/'+current_category.id|str+'?sort='+current_sort_type+'&') }}
+    </p>
+    </div>
+
+{% endblock %}

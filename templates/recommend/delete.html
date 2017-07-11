@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% from "macro.html" import follow_btn, area_list with context %}
+{% from "macro.html" import comment_form with context %}
+{% from "macro.html" import comment_list with context %}
+{% from "macro.html" import download_modal with context %}
+{% from "macro.html" import director_list, actor_list, category_list with context %}
+{% from 'macro.html' import rating_star %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    {{ bt.title }}-删除建议|{{ super() }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+     <link href="/static/css/movie.css" rel="stylesheet">
+{% endblock %}
+
+{% block container %}
+    <div class="movie-detail">
+        <div class="page-header">
+          <h3><a href="/bt/{{ bt.id }}">{{ bt.title }} <small></small></a></h3>
+        </div>
+    </div>
+    
+    <div style="padding: 15px">
+        <p class="alert-danger" style="padding: 10px">你正在进行删除建议操作</p>
+        <p><label>电影：</label>{{bt.movie.title}}</p>
+        <form class="form" method="post" role="form" action="/recommend/delete/{{bt.id}}">
+          {{ form.csrf_token }}
+          {{ wtf.form_field(form.reason) }}
+        <button type="submit">提交</button>
+        </form>
+    </div>
+{% endblock %}

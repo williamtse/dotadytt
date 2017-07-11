@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% from "macro.html" import movie_item with context %}
+
+
+{% block styles %}
+    {{ super() }}
+    <link href="/static/css/movie.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block container %}
+
+
+    <div class="search-filters col-md-8" style="padding: 15px">
+    <h3>地区：</h3>
+            {% for a in areas %}
+                <a style="text-decoration: none;display: inline-block;"
+                    href="/movie/area/{{ a.id }}">
+                {{ a.name }}
+                </a>
+            {% endfor %}
+    <h3>类型：</h3>
+
+            {% for c in categories %}
+                <a style="text-decoration: none;display: inline-block;"
+                        href="/movie/category/{{ c.id }}">
+                {{ c.name }}
+                </a>
+            {% endfor %}
+    </div>
+{% endblock %}

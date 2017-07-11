@@ -1,0 +1,24 @@
+<div id="carousel-example-generic" class="container carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+    <ol class="carousel-indicators">
+        {% for crs in carousels %}
+        <li data-target="#carousel-example-generic" data-slide-to="{{ loop.index - 1 }}"
+            class="{% if loop.index==1 %}active{% endif %}"></li>
+        {% endfor %}
+      </ol>
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner" role="listbox">
+      {% for crs in carousels %}
+        <div class="item {% if loop.index==1 %}active{% endif %}">
+            {% for pic in crs.pics %}
+            <a href="/movie/{{ pic.movie.id }}"
+                class="" style="padding-left: 0; float: left ">
+                  <img alt="First slide [900x500]" style="height: 247px"
+                   src="{{ pic.url }}">
+              </a>
+                {% endfor %}
+        </div>
+      {% endfor %}
+  </div>
+
+</div>

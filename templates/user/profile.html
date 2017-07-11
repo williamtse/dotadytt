@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% from "macro.html" import get_avatar,user_profile,profile_tabs with context %}
+{% from "macro.html" import follow_btn with context %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% from "macro.html" import message_list %}
+
+{% block title %}
+    {{ user.name }} - {{ super() }}
+{% endblock %}
+
+{% block container %}
+    <div class="col-md-2">
+            {{ user_profile(user,current_user) }}
+    </div>
+        <div class="col-md-10" style="padding-right:0;background:white;padding-top:15px">
+
+              {{ profile_tabs(tab) }}
+
+              <!-- Tab panes -->
+              <div class="tab-content">
+
+
+                  <div role="tabpanel" class="tab-pane active" id="home">
+                    {% if current_user.id==user.id %}
+                        <div class="row">
+                            <div class="new-post col-md-10" style="padding-top: 15px">
+                              <form action="/user-post" method="post">
+                                  {{ post_form.csrf_token }}
+                                  {{ wtf.form_field(post_form.title) }}
+                                    {{ wtf.form_field(post_form.content) }}
+                                  <button class="btn btn-info" type="submit">发布</button>
+                              </form>
+                          </div>
+                        </div>
+                        {% endif %}
+                        <div class="post-list row" style="padding:15px">
+                             <h5>最新发布</h5>
+                            {% for article in articles %}
+                                <div class="post-item">
+                                    <p>{{ article.created_at }}</p>
+                                    <p>{{ article.content|safe }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                  </div>
+
+
+
+
+
+                <div role="tabpanel" class="tab-pane" id="message" style="padding: 15px">
+                    {{ message_list(user.all_messages().limit(30), current_user) }}
+                </div>
+
+              </div>
+
+    </div>
+
+{% endblock %}

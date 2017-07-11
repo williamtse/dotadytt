@@ -1,0 +1,52 @@
+{% from "macro.html" import movie_follow_btn with context %}
+{% from 'macro.html' import rating_star %}
+
+{% macro list(movies,current_user) -%}
+    {% for movie in movies %}
+    <div class="list_item {% if loop.index%2==0 %}odd{% else %}even{% endif %}" itemscope="" itemtype="http://schema.org/Movie">
+        <table cellspacing="0" cellpadding="0" border="0" class="nm-title-overview-widget-layout">
+            <tbody>
+                <tr>
+                    <td rowspan="2" valign="top" id="img_primary">
+                        <div class="image">
+                            <a href="javascript:void(0)">
+                                <div class="hover-over-image zero-z-index" style="position: relative;">
+                                    <img id="movie-list-img" class="poster shadowed" height="100" width="65" alt="{{ movie.name }}"
+                                         title="{{ movie.name }}" src="{{movie.pic|show_mainpic}}" itemprop="image">
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="overview-top" style="padding-left:15px">
+                        <h4 itemprop="name">
+                            <a href="/movie/{{ movie.id }}" title="{{ movie.name }}" itemprop="url">{{ movie.name }}({{movie.year}})</a>
+                        </h4>
+                        <p class="cert-runtime-genre">
+                            {% if movie.pg %}
+                            <img title="电影分级 PG-{{ movie.pg }}" alt="分级 PG-{{ movie.pg }}"
+                                 class="absmiddle certimage"
+                                 src="/static/img/pg_{{ movie.pg }}.png">
+                            {% endif %}
+                            {% if movie.duration %}
+                                <time itemprop="duration" datetime="PT141M">{{ movie.duration }}分钟</time>
+                            {% endif %}
+                                        &nbsp;&nbsp;-&nbsp;&nbsp;
+                            {{ rating_star(movie.rating_num) }}
+                        </p>
+
+                        
+                        <p></p>
+                        
+                        {% if movie.publish_date %}
+                        <div class="txt-block">
+                            <h5 class="inline">上映时间：<span>{{ movie.publish_date }}</span></h5>
+                        </div>
+                    {% endif %}
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    </div>
+    {% endfor %}
+{%- endmacro %}
+

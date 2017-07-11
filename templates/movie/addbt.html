@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% from "macro.html" import follow_btn, area_list with context %}
+{% from "macro.html" import comment_form with context %}
+{% from "macro.html" import comment_list with context %}
+{% from "macro.html" import download_modal with context %}
+{% from "macro.html" import director_list, actor_list, category_list with context %}
+{% from 'macro.html' import rating_star %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    {{ movie.title }}|{{ super() }}
+{% endblock %}
+
+{% block styles %}
+    {{ super() }}
+     <link href="/static/css/movie.css" rel="stylesheet">
+{% endblock %}
+
+{% block container %}
+    <div class="movie-detail">
+        <div class="page-header">
+          <h3><a href="/movie/{{ movie.id }}">{{ movie.title }} <small></small></a></h3>
+        </div>
+    </div>
+    
+    <div style="padding: 0 15px">
+        <p class="alert-danger" style="padding: 10px">你正在推荐电影下载资源，禁止提供无关或者不良的电影资源</p>
+        <form class="form" method="post" role="form" action="/movie/addbt/{{movie.id}}">
+          {{ form.csrf_token }}
+          {{ wtf.form_field(form.title) }}
+          {{ wtf.form_field(form.url) }}
+          {{ wtf.form_field(form.size) }}
+          {{ wtf.form_field(form.format) }}
+          {{ wtf.form_field(form.version) }}
+            <button type="submit">提交</button>
+        </form>
+    </div>
+{% endblock %}

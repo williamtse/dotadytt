@@ -1,0 +1,60 @@
+{% extends "layout-myspace.html" %}
+{% block styles %}
+{{super()}}
+<style>
+    .chosebtn a{
+        display: block;
+        float: left;
+        padding: 15px 20px;
+        border: 1px solid #dddddd;
+        margin: 5px 10px 20px;
+        cursor: pointer;
+        text-decoration: none;
+    }
+#chosework .active a {
+    background:#ACD6FF
+}
+</style>
+{% endblock %}
+
+{% block user_right %}
+    <form>
+          <div class="form-group">
+            <label for="username">昵称：</label>
+            <input type="text" class="form-control" id="username" placeholder="昵称">
+          </div>
+      </form>
+    <fieldset>
+        <legend>从事行业</legend>
+        <div class="nav nav-tabs" role="tablist" id="chosework">
+            <div role="presentation" class="active chosebtn">
+                <a href="#student" role="tab" data-toggle="tab">在校学生</a>
+            </div>
+            <div role="presentation" class=" chosebtn">
+                <a href="#worker" role="tab" data-toggle="tab">工作人士</a>
+            </div>
+        </div>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane fade in active" id="student">
+                <form>
+                  <div class="form-group">
+                    <label for="school">院校：</label>
+                    <input type="text" class="form-control" id="school" placeholder="在读院校">
+                  </div>
+              </form>
+          </div>
+          <div role="tabpanel" class="tab-pane fade" id="worker">
+              <form>
+                  <div class="form-group">
+                    <label for="company">公司：</label>
+                    <input type="text" class="form-control" id="company" placeholder="在职公司">
+                  </div>
+                  <div class="form-group">
+                    <label for="job">职称：</label>
+                    <input type="text" class="form-control" id="job" placeholder="">
+                  </div>
+              </form>
+          </div>
+        </div>
+    </fieldset>
+{% endblock %}

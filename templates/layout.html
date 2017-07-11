@@ -1,0 +1,175 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
+{% import "nav.html" as nav with context%}
+
+{% block styles %}
+{{super()}}
+    <meta name="baidu-site-verification" content="EnssNLHVVf" />
+    <link href="/css/mycss.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+    $(function(){
+        $(".bt-item").each(function(){
+            $(this).hover(function(){
+                $(this).find('.bt-recommend').show()
+            }, function(){
+                $(this).find('.bt-recommend').hide()
+            });
+        });
+    });
+    function ajax_login() {
+            $.ajax({
+                url:'/ajax-login',
+                data: $('#login-form').serialize(),
+                type: 'POST',
+                dataType: 'json',
+                success: function(re){
+                    if(re.status==1){
+                        history.go(0);
+                    }else{
+                        $('#login-error').show().html(re.info)
+                    }
+                }
+            });
+        }
+    function follow(imdbid, type){
+            {% if current_user.is_authenticated %}
+                $.ajax({
+                   url:'/movie/favorite/'+imdbid,
+                    type:'post',
+                    data:{type:type},
+                    dataType:'json',
+                    success:function(re){
+                       if(re.status==1){
+                            history.go(0)
+                       }else if(re.status==2){
+                            $("#login").modal();
+                       }
+                    }
+                });
+            {% else %}
+                $("#login").modal();
+            {% endif %}
+        }
+
+    function movie_favorite(mid){
+        $.ajax({
+           url:'/movie/favorite/'+mid,
+            type:'post',
+            dataType:'json',
+            success:function(re){
+               if(re.status==1){
+                    history.go(0)
+               }else if(re.status==2){
+                    $("#login").modal();
+               }
+            }
+        });
+    }
+
+    function praise(self, comment_id){
+        {% if current_user.is_authenticated %}
+            $.ajax({
+               url:'/praise',
+                type:'post',
+                data:{comment_id:comment_id},
+                dataType:'json',
+                success:function(re){
+                   if(re.status==1){
+                        $(self).find('.praise-count').html(parseInt($(self).find('.praise-count').html())+1)
+                   }else if(re.status==2){
+                        $("#login").modal();
+                   }
+                }
+            });
+        {% else %}
+            $("#login").modal();
+        {% endif %}
+    }
+
+    $(function(){
+        $('.trailer').click(function(){
+            $(this).parent().find('video')[0].play();
+            $(this).hide();
+        });
+
+      $('[data-toggle="popover"]').popover({
+          html:'<div class="popover" role="tooltip"><div class="arrow"></div><div class="popover-content"></div></div>'
+      });
+    });
+    $(function(){
+          $('.tags-del').click(function(){
+                url = $(this).data('url')
+              location.href=url;
+          });
+
+      });
+    </script>
+    <script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?62f2fc98017c984a4534ca969cd2f0ec";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+{% endblock %}
+
+{% block title %}
+    DOTA电影天堂_电影资源分享_免费电影_迅雷电影下载—万达电影
+{% endblock %}
+
+
+{% block head %}
+    {{super()}}
+    {{fixes.ie8()}}
+    <META content="电影资源分享，电影下载，电影天堂，DOTA电影，LOL电影，全集网，韩国情色电影，日韩亚洲电影av" name="keywords">
+    <META content="最好的迅雷电影下载网，分享最新电影，高清电影、综艺、动漫、电视剧等下载！" name=description>
+    <link rel="shortcut icon" href="/favicon_.ico" type="image/x-icon">
+{% endblock %}
+
+
+{% block navbar %}
+    {{ nav }}
+{% endblock %}
+
+
+
+{% block content %}
+    {% block carousel %}
+    {% endblock %}
+    
+
+    <div style="clear: both"></div>
+    <div class="container">
+        {{util.flashed_messages(dismissible=True)}}
+        {% block container %}
+        {% endblock %}
+    </div>
+
+
+{% endblock %}
+
+

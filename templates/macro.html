@@ -1,0 +1,612 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% macro follow_btn(imdbid, type) -%}
+    {% if imdbid|followed %}
+        <button class="btn btn-block" onclick="follow('{{ imdbid }}','{{ type }}')">取消喜欢</button>
+    {% else %}
+        <button onclick="follow('{{ imdbid }}','{{ type }}')" data-id="{{ imdbid }}"
+                class="btn btn-block btn-success">喜 欢</button>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro favorite_btn(movie) -%}
+    {% if movie.favorited() %}
+        <button class="btn btn-block" onclick="movie_favorite('{{ movie.id }}')">取消喜欢</button>
+    {% else %}
+        <button onclick="movie_favorite({{ movie.id }})" data-id="{{ imdbid }}"
+                class="btn btn-block btn-success">喜 欢</button>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro category_filter(areas,categories,years,current_area, current_category, current_year) -%}
+    <div class="container" id="category-filter">
+        <p>
+            <label>地区：</label>
+            {% for area in areas %}
+                <a href="/search?{{ area.id }}_{{ current_category }}_{{ current_year }}"></a>
+            {% endfor %}
+        </p>
+    </div>
+{%- endmacro %}
+
+{% macro movie_item(movie, loop) -%}
+    <div class="list_item {% if loop.index%2==0 %}odd{% else %}even{% endif %}" itemscope="" itemtype="http://schema.org/Movie">
+        <table cellspacing="0" cellpadding="0" border="0" class="nm-title-overview-widget-layout">
+            <tbody>
+                <tr>
+                    <td rowspan="2" valign="top" id="img_primary">
+                        <div class="image">
+                            <a href="javascript:void(0)">
+                                <div class="hover-over-image zero-z-index" style="position: relative;">
+                                    <img id="movie-list-img" class="poster shadowed" height="209" width="140" alt="{{ movie.name }}"
+                                         title="{{ movie.name }}" src="{{ movie.pics[0].url }}" itemprop="image">
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="overview-top">
+                        <h4 itemprop="name">
+                            <a href="/movie/{{ movie.id }}" title="{{ movie.name }}" itemprop="url">{{ movie.name }}</a>
+                        </h4>
+                        <p class="cert-runtime-genre">
+                            {% if movie.pg %}
+                            <img title="电影分级 PG-{{ movie.pg }}" alt="分级 PG-{{ movie.pg }}"
+                                 class="absmiddle certimage"
+                                 src="/static/img/pg_{{ movie.pg }}.png">
+                            {% endif %}
+                            {% if movie.duration %}
+                                <time itemprop="duration" datetime="PT141M">{{ movie.duration }}分钟</time>
+                            {% endif %}
+                                        &nbsp;&nbsp;-&nbsp;&nbsp;
+                            {% for category_rel in movie.categories %}
+                                {% if loop.index>1 %}
+                                    <span class="ghost">|</span>
+                                {% endif %}
+                                <a href="/movie/search/0-{{ category_rel.category.id }}-0">
+                                    <span itemprop="genre">{{ category_rel.category.name }}</span>
+                                </a>
+
+                            {% endfor %}
+                        </p>
+
+                        <div class="outline" itemprop="description">
+                            {{ movie.info|safe|truncate(100, True, '...', 0) }}
+                            {% if movie.info|safe|length>100 %}<a href="/movie/{{ movie.id }}?#info">更多</a>{% endif %}
+                        </div>
+                        <p></p>
+                        <div class="txt-block">
+                            <h5 class="inline">导演:</h5>
+                            {% for director_rel in movie.directors %}
+                                <span itemprop="director" itemscope="" itemtype="http://schema.org/Person">
+                                    <span itemprop="name">
+                                        <a href="/director/{{ director_rel.director.id }}" itemprop="url">
+                                            {{ director_rel.director.name }}</a>
+                                    </span>
+                                </span>
+                                {% endfor %}
+                        </div>
+                        <div class="txt-block">
+                            <h5 class="inline">主演:</h5>
+                            {% for actor_rel in movie.actors %}
+                                <span itemprop="actors" itemscope="" itemtype="http://schema.org/Person">
+                                    <span itemprop="name">
+                                        <a href="/actor/{{ actor_rel.actor.id }}" itemprop="url">
+                                            {{ actor_rel.actor.name }} , </a>
+                                    </span>
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <div class="txt-block">
+                            <h5 class="inline">上映时间：</h5>
+                            <span>{{ movie.publish_date }}</span>
+                        </div>
+                    </td>
+                </tr>
+            <tr>
+                <td class="overview-bottom">
+
+                    <span class="wlb_wrapper">
+                         <a class="wlb_watchlist_lite btn2_wrapper btn2_active wlb_lite"
+                            data-tconst="tt0451279" data-size="small"
+                            data-caller-name="Title" data-initialized="1"
+                            href="/movie/add-to-watchlist/{{ movie.id }}">
+                         <div class="btn2_alert" style="display:none"></div>
+                             {% if current_user.is_authenticated and followed(movie.imdbid,'movie')%}
+                                 <a class="btn2 small btn2_text_on" title="取消关注订阅电影"
+                                    href="/movie/{{ movie.id }}">
+                                     <span class="btn2_glyph"></span>
+                                    <span class="btn2_text" style="padding: 5px 10px">取消关注</span>
+                                 </a>
+                             {% else %}
+                             <a class="btn2 small btn2_text_on" title="关注订阅电影"
+                                onclick="follow('{{ movie.imdbid }}','movie')">
+                                 <span class="btn2_glyph"></span>
+                                <span class="btn2_text" style="padding: 5px 10px">关 注</span>
+                             </a>
+                             {% endif %}
+                         </a>
+
+                     </span>
+                    <span class="glyphicon glyphicon-question-sign"
+                          style="color:darkgray; cursor: pointer;font-size: 16px;top: 4px;"
+                      data-toggle="popover" data-trigger="hover"
+                          data-content="关注电影，订阅消息"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+{%- endmacro %}
+
+{% macro category_list(category_refs) -%}
+    {% for category_ref in category_refs %}
+        {% if loop.index>1 %}
+            |
+        {% endif %}
+        <a href="/movie/category/{{ category_ref.id }}" class="nodecoration">{{ category_ref.name }}</a>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro area_list(areas) -%}
+    {% for area in areas %}
+        {% if loop.index>1 %}
+            |
+        {% endif %}
+        <a href="/movie/area/{{ area.id }}" class="nodecoration">{{ area.name }}</a>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro director_list(directors) -%}
+    {% for dir_ref in directors %}
+        {% if loop.index>1 %}
+            ,
+        {% endif %}
+        <a href="/celebrity/{{ dir_ref.id }}" class="nodecoration">{{ dir_ref.name }}</a>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro actor_list(actors) -%}
+    {% for actor_ref in actors %}
+        {% if loop.index>1 %}
+                /
+        {% endif %}
+        <a href="/celebrity/{{ actor_ref.id }}" class="nodecoration">{{ actor_ref.name }}</a>
+      {% endfor %}
+{%- endmacro %}
+
+{% macro movie_info(movie) -%}
+     <div class="panel panel-default">
+        <div class="panel-heading">
+            <a href="/movie/{{ movie.id }}">{{ movie.name }}></a>
+        </div>
+        <div class="panel-body">
+            <div class="">
+                <div class="">
+                    <img src="{{ movie.pic|show_mainpic }}" class="col-lg-6">
+                    <div class="col-lg-6">
+                    <p>
+                        导演：{{ movie.directors[0].name }}
+                    </p>
+                    <p>
+                        主演：{{ movie.actors[0].name }}
+                    </p>
+                    <p>
+                        上映：{{ movie.publish_date }}
+                    </p>
+                        {{ follow_btn(movie.imdbid, 'movie') }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro actor_info(actor) -%}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a href="/actor/{{ actor.id }}">{{ actor.name }}></a>
+        </div>
+        <div class="panel-body">
+            <img src="{{ actor.pic }}" class="col-lg-6">
+            <p>出生：{{ actor.born }}</p>
+            <p>简介：{{ actor.info|safe }}</p>
+            {{ follow_btn(actor.imdbid, 'actor') }}
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro director_info(director) -%}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a href="/actor/{{ director.id }}">{{ director.name }}></a>
+        </div>
+        <div class="panel-body">
+            <img src="{{ director.pic }}" class="col-lg-6">
+            <p>出生：{{ director.born }}</p>
+            <p>简介：{{ director.info|safe }}</p>
+            {{ follow_btn(director.imdbid, 'director') }}
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro get_avatar(email,size='64',class='img-circle') -%}
+    <img src="https://secure.gravatar.com/avatar/{{ email|md5 }}?s={{ size }}" class="{{ class }}">
+{%- endmacro %}
+
+{% macro comment_form(form, imdbid, url) -%}
+    <form id="comment-form" class="form" method="post" action="/comment/{{ imdbid|trim }}?url={{ url }}"
+          role="form">
+      {{ form.csrf_token }}
+      {{ wtf.form_field(form.content) }}
+        <button class="btn btn-primary" type="submit">加上去</button>
+    </form>
+{%- endmacro %}
+
+{% macro comment_list(comments, fbfm, base_url) -%}
+    {% for cmt in comments %}
+        <div class="media">
+            <div class="media-left">
+                <a href="/profile/{{ cmt.user.id }}">
+					<img style="max-width: 100px" class="img-circle" src="{{ cmt.user.email | get_avatar('32') }}"
+                         alt="{{ cmt.user.name }}">
+                </a>
+            </div>
+            <div class="media-body">
+                <p>
+                    <a href="/profile/{{ cmt.user.id }}">{{ cmt.user.name }}</a>
+                    <span class="comment-time">{{ cmt.created_at }}</span>
+                </p>
+                <p>
+                    {{ cmt.content }}
+                </p>
+                <div class="">
+                    <div style="text-align:right">
+                        {% if cmt.feedback_able() %}
+                        <span style="float: left;"><a href="javascript:void(0)" onclick="$('#cmf-{{ cmt.id }}').toggle()">回复</a></span>
+                        {% endif %}
+                        <span><a href="javascript:void(0)" onclick="praise(this, {{ cmt.id }})">
+                            赞(<span class="praise-count">{{ cmt.praises|length }}</span>)</a></span>
+                    </div>
+                </div>
+
+                <div id="cmf-{{ cmt.id }}" style="display: none;">
+				    <form action="/feedback/{{cmt.id}}?url={{ base_url }}#comment-{{ cmt.id }}" method="post">
+                        {{ fbfm.csrf_token }}
+                        {{ wtf.form_field(fbfm.content) }}
+                        <button type="submit">回复</button>
+                    </form>
+                </div>
+                {% if cmt.feedbacks %}
+                <div class="feedback-list odd">
+                    <div>
+                        {% for fb in cmt.feedbacks %}
+                            <p><a href="/profile/{{ fb.user.id }}">{{ fb.user.name }}</a>: {{ fb.content }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <a name="comment-{{ cmt.id }}"></a>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro article_list(articles) -%}
+    {% for article in articles %}
+    <div class="media {% if loop.index%2==0 %}even{% else %}odd{% endif %}">
+        <div class="media-left">
+            <img src="{{ article.pic }}" style="width: 160px;" class="shadowed">
+        </div>
+        <div class="media-body">
+            <h3 class="media-hadding">
+                <a href="/article/{{ article.id }}">{{ article.title }}</a>
+            </h3>
+            {{ article.brief }}
+        </div>
+    </div>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro download_modal()-%}
+    <div id="download-dialog" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h3 class="page-header">下载地址</h3>
+                    <div class="form-group">
+                        <input class="form-control" id="bt-url">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{%- endmacro %}
+
+
+{% macro message_list(messages, current_user) -%}
+    {% for msg in messages %}
+    <li>
+    <p>
+        {{ msg.created_at|timeago }}
+        <a href="/profile/{{ msg.sender.id }}">
+            <img src="{{ msg.sender.email|get_avatar('16') }}" class="img-circle">
+        {{ msg.sender.name }}</a>
+
+           {% if msg.type=='praise' %}
+               <a href="/comment/{{ msg.rel_id }}" style="padding: 0; display: inline;color:#333">
+                   <span class="glyphicon glyphicon-thumbs-up"></span>
+                   </a>
+               {% elif msg.type=='feedback' %}
+               <a href="/comment/{{ msg.rel_id }}" style="padding: 0; display: inline;color:#333">
+                   回复了你的评论
+                   </a>
+               {% elif msg.type=='btvote' %}
+               <a href="/bt/{{ msg.rel_id }}" style="padding: 0; display: inline;color:#333">
+                   {{ msg.content }}
+               </a>
+
+           {% endif %}
+        </a>
+    </p>
+    </li>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro movie_follow_btn(movie, current_user) -%}
+
+	 {% if current_user.is_authenticated and movie.imdbid|followed%}
+		 <a class="btn2 small btn2_text_on" title="取消关注订阅电影"
+			href="/movie/{{ movie.id }}">
+			 <span class="btn2_glyph"></span>
+			<span class="btn2_text" style="padding: 5px 10px">已预约</span>
+		 </a>
+	 {% else %}
+	 <a class="btn2 small btn2_text_on" title="关注订阅电影"
+		onclick="add_to_watchlist({{ movie.id }})" href="/movie/{{ movie.id }}">
+		 <span class="btn2_glyph"></span>
+		<span class="btn2_text" style="padding: 5px 10px">预 约</span>
+	 </a>
+	 {% endif %}
+	 <span>({{ movie.followers().count() }} 人预约)</span>
+
+{%- endmacro %}
+
+{% macro render_pagination(pagination,base_url) %}
+  <div class=pagination>
+  {%- for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <a href="{{base_url}}page={{page}}">{{ page }}</a>
+      {% else %}
+        <strong>{{ page }}</strong>
+      {% endif %}
+    {% else %}
+      <span class=ellipsis>…</span>
+    {% endif %}
+  {%- endfor %}
+  {% if pagination.has_next %}
+    <a href="{{base_url}}page={{ pagination.page + 1}}">下一页 &raquo;</a>
+  {% endif %}
+  </div>
+{% endmacro %}
+
+{% macro rating_star(rating_num) %}
+    <span class="rating">
+        <span class="rating-star allstar{{ rating_num|rating_class_num }}"></span><span class="subject-rate">{{ rating_num }}</span>
+    </span>
+{% endmacro %}
+
+{% macro order_list(url, current_sort_type=S, ancho='') %}
+<div class="clearfix">
+    <span class="rr greyinput">
+        {% if request.args.get('sort') == 'O' or not request.args.get('sort')%}
+            综合排序
+        {% else %}
+            <a href="{{url}}O#{{ ancho }}">综合排序</a>
+        {% endif %}
+        /
+        {% if request.args.get('sort')=='S'%}
+        评分排序
+        {% else %}
+        <a href="{{url}}S#{{ ancho }}">评分排序</a>
+        {% endif %}
+        &nbsp;/&nbsp;
+        {% if request.args.get('sort')=='R'%}
+        日期排序
+        {% else %}
+        <a href="{{url}}R#{{ ancho }}">日期排序</a>
+        {% endif %}
+    </span>
+</div>
+{% endmacro %}
+
+{% macro douban_comment_list(comments, fbfm, base_url) -%}
+    {% if comments %}
+    {% for cmt in comments %}
+        <div class="media">
+            <div class="media-left">
+                
+            </div>
+            <div class="media-body">
+            {{cmt.content|safe}}
+            </div>
+        </div>
+    {% endfor %}
+    {% else %}
+                        <p style="text-align: center">~~暂无评论</p>
+    {% endif %}
+{%- endmacro %}
+
+
+{% macro movie_list(movies,current_user) -%}
+    {% for movie in movies %}
+    <div class="list_item {% if loop.index%2==0 %}odd{% else %}even{% endif %}" itemscope="" itemtype="http://schema.org/Movie">
+        <table cellspacing="0" cellpadding="0" border="0" class="nm-title-overview-widget-layout" style="width: 100%">
+            <tbody>
+                <tr>
+                    
+                    <td rowspan="2" valign="top" id="img_primary" style=" width: 70px;">
+                        <div class="image">
+                            <a href="javascript:void(0)">
+                                <div class="hover-over-image zero-z-index" style="position: relative;">
+                                    <a href="/movie/{{ movie.id }}" title="{{ movie.name }}">
+                                        <img id="movie-list-img" class="poster shadowed" height="100" width="65" alt="{{ movie.name }}"
+                                         title="{{ movie.name }}" src="{{movie.pic|show_mainpic}}" itemprop="image">
+                                    </a>
+                                </div>
+                            </a>
+                        </div>
+                    </td>
+                    <td class="overview-top" style="padding-left:15px">
+                        <h4 itemprop="name">
+                            <a href="/movie/{{ movie.id }}" title="{{ movie.name }}" itemprop="url">{{ movie.name }}({{movie.year}})</a>
+                        </h4>
+                        <div>
+                            <div style="float: left">
+                                <p class="cert-runtime-genre">
+                                    {% if movie.pg %}
+                                    <img title="电影分级 PG-{{ movie.pg }}" alt="分级 PG-{{ movie.pg }}"
+                                         class="absmiddle certimage"
+                                         src="/static/img/pg_{{ movie.pg }}.png">
+                                    {% endif %}
+                                    {% if movie.duration %}
+                                        <time itemprop="duration" datetime="PT141M">{{ movie.duration }}分钟</time>
+                                    {% endif %}
+                                                &nbsp;&nbsp;-&nbsp;&nbsp;
+                                    {{ rating_star(movie.rating_num) }}
+                                </p>
+
+                                
+                                <p></p>
+                                
+                                {% if movie.publish_date %}
+                                <div class="txt-block">
+                                    <h5 class="inline">上映时间：<span>{{ movie.publish_date }}</span></h5>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="cp" style="float: right;">
+                                <div class="votes">
+                                    <div class="mini-counts"><span title="{{ movie.favorite_count}} 喜欢">{{ movie.favorite_count}}</span></div>
+                                    <div>喜欢</div>
+                                </div>
+                                <div class="votes{% if movie.bt_count >0 %} has-bt {% endif %}">
+                                    <div class="mini-counts"><span title="{{ movie.bt_count }} 资源">{{ movie.bt_count }}</span></div>
+                                    <div>资源</div>
+                                </div>
+                                <div class="votes">
+                                    <div class="mini-counts"><span title="{{ movie.read_count }} 浏览">{{ movie.read_count }}</span></div>
+                                    <div>浏览</div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    </div>
+    {% endfor %}
+{%- endmacro %}
+
+
+{% macro celebrity_movies(type,celebrity) %}
+    <a name="movies"></a>
+    <div id="movie-list">
+        {{order_list('/'+type+'/'+celebrity.id|str+'?sort=',current_sort_type,'movies')}}
+        {% if request.args.get('sort') =='R' %}
+            {{ movie_list(celebrity.movies |sort(attribute='publish_date', reverse = True) ,current_user) }}
+        {% elif request.args.get('sort') =='S' %}
+            {{ movie_list(celebrity.movies |sort(attribute='rating_num', reverse = True),current_user) }}
+        {% else %}
+            {{ movie_list(celebrity.movies,current_user) }}
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% macro recommend(bt, current_user) %}
+    <span  class="bt-recommend" style="display: none;">
+        <label>建议：</label>
+        <a href="/recommend/delete/{{bt.id}}" title="无法下载、重复、无关或者质量低的资源，建议删除" class="nodecoration" style="color: red">删除({{bt.delete_count}})</a>
+        &nbsp;
+        <a style="color: green" href="/recommend/useful/{{bt.id}}" title="高质量的资源，建议采纳" class="nodecoration">采纳({{bt.accept_count}}) </a>
+    &nbsp;
+        <a style="color: gray" href="/recommend/report/{{bt.id}}" title="不良的资源，举报贡献者" class="nodecoration">举报({{bt.accept_count}}) </a>
+    </span>&nbsp;&nbsp;
+    {% if not bt.voted() %}
+        <a href="javascript:vote('{{bt.id}}', 'down')" title="糟糕的资源，踩一下" id="voteup-{{bt.id}}"><span  class="glyphicon glyphicon-triangle-left"></span></a>
+        <span id="votes-{{bt.id}}">{{bt.vote_count}}</span>
+        <a href="javascript:vote('{{bt.id}}', 'up')" title="好资源，给个赞" id="votedown-{{bt.id}}"><span  class="glyphicon glyphicon-triangle-right"></span></a>&nbsp;&nbsp;
+    {% else %}
+        <a href="javascript:void(0)" title="糟糕的资源，踩一下"><span style="color:#dddddd" class="glyphicon glyphicon-triangle-left"></span></a>
+        <span id="votes-{{bt.id}}">{{bt.vote_count}}</span>
+        <a href="javascript:void(0)" title="好资源，给个赞"><span  style="color:#dddddd" class="glyphicon glyphicon-triangle-right"></span></a>&nbsp;&nbsp;
+    {% endif %}
+{% endmacro %}
+
+{% macro profile_tabs(tab) %}
+    <ul class="nav nav-tabs">
+        <li {% if tab=='home' %}class="active"{% endif %} >
+            <a href="/profile/{{ user.id }}" >动态</a>
+        </li>
+        <li {% if tab=='contribute' %}class="active"{% endif %} >
+          <a href="/profile/{{ user.id }}/contribute">贡献</a>
+        </li>
+        <li {% if tab=='follow' %}class="active"{% endif %} >
+            <a href="/profile/{{ user.id }}/follow" >关注</a>
+        </li>
+        <li {% if tab=='message' %} class="active" {% endif %} >
+          {% if current_user.id==user.id %}
+                <a  href="/profile/{{ user.id }}/message" >消息</a>
+          {% endif %}
+        </li>
+      </ul>
+{% endmacro %}
+
+{% macro user_profile(user, current_user) %}
+    <div class="panel-heading">
+        {{ user.name }}的基本信息
+    </div>
+    <div class="panel-body">
+      {{ get_avatar(user.email,'128', 'img-rounded') }}
+      <p style="padding: 10px"></p>
+      <p><label>用户ID：</label>{{ user.name }}</p>
+
+        <p>
+            <label>地理位置：</label>
+            <span class="glyphicon glyphicon-map-marker"></span>
+            <span style="padding:0 5px">
+            {{ user.login_ip|get_location }}
+                </span>
+        </p>
+            {% if not (current_user.is_authenticated and current_user.id==user.id) %}
+        <p style="width: 200px;margin:0 auto">{{ follow_btn('us'+user.id|str,'user') }}</p>
+    {% endif %}
+
+    </div>
+{% endmacro %}
+
+{% macro bt_list(bts, current_user) %}
+    {% for bt in bts %}
+        <a name="bt{{bt.id}}"></a>
+        <p class="{% if loop.index%2==0 %} even {% else %} odd {% endif %} bt-item">
+            {% if not bt.user==None %}
+            <span><a href="/profile/{{bt.user.id}}"><img class="img-circle" src="{{bt.user.email|get_avatar('16')}}"></a></span>
+            {% else %}
+            <span>站长提供</span>
+            {% endif %}
+            <span class="glyphicon glyphicon-film shadowed"></span>
+            <a href="/bt/{{ bt.id }}" class="nodecoration">{{ bt.title }}</a>
+            <span style="float: right">
+                {{recommend(bt, current_user)}}
+            </span>
+        </p>
+    {% endfor %}
+{% endmacro %}

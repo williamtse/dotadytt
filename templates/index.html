@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% import "carousel.html" as carousel with context%}
+{% from "macro.html" import article_list, movie_list with context %}
+{% block carousel %}
+{{ carousel }}
+{% endblock %}
+
+{% block container %}
+<div class="col-md-8 index-page">
+    <h3 class="head-line">电影资讯</h3>
+    {{article_list(articles)}}
+</div>
+<div class="col-md-4 index-page">
+    <h3 class="head-line">热门电影</h3>
+    <div id="newest">
+        {{movie_list(newest, current_user)}}
+    </div>
+</div>
+{% endblock %}
+

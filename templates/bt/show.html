@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% from "macro.html" import follow_btn with context %}
+{% from "macro.html" import movie_info with context %}
+{% from "macro.html" import actor_info with context %}
+{% from "macro.html" import director_info with context %}
+{% from "macro.html" import comment_form with context %}
+{% from "macro.html" import comment_list, recommend with context %}
+
+{% block title %}
+    {{ bt.title }}|{{ super() }}
+{% endblock %}
+
+{% block container %}
+<h3 class="page-header"><a href="/bt/{{bt.id}}">{{bt.title}}</a></h3>
+<div class="col-md-9 index-page">
+    <div class="media">
+        <div class="media-left">
+            <img src="/static/img/mainpic/{{bt.movie.pic}}" style='height: 160px'>
+        </div>
+        <div class="media-body">
+            <p>
+                <label>电影：</label>
+                <a href='/movie/{{bt.movie.id}}'>{{bt.movie.name}}</a>
+            </p>
+            <p>
+                <label>大小：</label>
+                <a href='/movie/{{bt.movie.id}}'>{{bt.size}}</a>
+            </p>
+            <p>
+                <label>格式：</label>
+                <a href='/movie/{{bt.movie.id}}'>{{bt.format}}</a>
+            </p>
+            <p>
+                <label>字幕：</label>
+                <a href='/movie/{{bt.movie.id}}'>{{bt.version}}</a>
+            </p>
+            <p>
+                <label>贡献者：</label>
+                {%if bt.user%}
+                <a href='/profile/{{bt.user.id}}'><img class="img-circle" src="{{bt.user.email|get_avatar('16')}}">{{bt.user.name}}</a>
+                {%else%}
+                站长
+                {%endif%}
+            </p>
+            <p><label>下载次数：</label>{{ bt.downloads|count}}</p>
+            <p>
+                <label>下载：</label>
+                <a href="/download/{{bt.id}}"><span class="glyphicon glyphicon-download-alt"></span></a>
+            </p>
+            
+            <p class="bt-item"><label>建议：</label>
+            {{ recommend(bt, current_user) }}
+            </div>
+    </div>
+</div>
+{% endblock %}

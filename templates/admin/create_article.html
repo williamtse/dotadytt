@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block body %}
+    <ul class="nav nav-tabs">
+    <li>
+        <a href="/admin/article/">List</a>
+    </li>
+    <li class="active">
+        <a href="javascript:void(0)">Create</a>
+    </li>
+  </ul>
+    <form action="/admin/article/new/?url=%2Fadmin%2Fcategory%2F"
+          method="POST" role="form" class="admin-form">
+    {{ form.csrf_token }}
+    {{ wtf.form_field(form.title) }}
+    {{ wtf.form_field(form.brief) }}
+    {{ wtf.form_field(form.pic) }}
+    {{ wtf.form_field(form.rel_movies) }}
+    {{ wtf.form_field(form.content) }}
+    {{ wtf.form_field(form.submit) }}
+    </form>
+<script src="/ckeditor/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('content');
+</script>
+{% endblock %}
+

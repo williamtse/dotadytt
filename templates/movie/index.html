@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% import "login-modal.html" as login_modal with context %}
+{% from "macro.html" import movie_list %}
+{% block styles %}
+    {{ super() }}
+    <link href="/css/movie.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block container %}
+    <div id="movie-list" class="col-md-9">
+
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">院线上映</a></li>
+        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">即将上映</a></li>
+      </ul>
+        <div class="header">&nbsp;</div>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="home">
+            <h3>本周上映</h3>
+                {{ movie_list(movies,current_user) }}
+            </div>
+            <div role="tabpanel" class="tab-pane" id="profile">
+                {{ movie_list(coming_soon,current_user) }}
+            </div>
+          </div>
+    </div>
+
+    <div id="movie-list-right" class="col-md-3">
+
+    </div>
+
+    {{ login_modal }}
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+
+    </script>
+{% endblock %}

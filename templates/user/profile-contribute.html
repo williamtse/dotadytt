@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% from "macro.html" import get_avatar, profile_tabs,follow_btn,message_list,user_profile,bt_list with context %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+    {{ user.name }} - {{ super() }}
+{% endblock %}
+
+{% block container %}
+    <div class="col-md-2">
+            {{ user_profile(user,current_user) }}
+    </div>
+    <div class="col-md-10" style="padding-right:0;background:white;padding-top:15px">
+        {{ profile_tabs(tab) }}
+      <!-- Tab panes -->
+      <div role='tabpanel' class="tab-pane active" id="contribute">
+        <div style="padding: 15px">
+          <h5 class="head-line">贡献的资源</h5>
+          <div>
+            {{ bt_list(user.bts, current_user) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

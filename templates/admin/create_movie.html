@@ -1,0 +1,35 @@
+{% extends 'admin/master.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block body %}
+    <ul class="nav nav-tabs">
+    <li>
+        <a href="/admin/movie/">List</a>
+    </li>
+    <li class="active">
+        <a href="javascript:void(0)">Create</a>
+    </li>
+  </ul>
+    <form action="/admin/movie/new/?url=%2Fadmin%2Fmovie%2F" method="POST" role="form" class="admin-form">
+    {{ form.csrf_token }}
+    <label class="control-label" for="name">类别</label>
+     <div class="checkbox" style="padding: 10px;{% if errors %}border: 1px solid red{% endif %}">
+         {% for category in categories %}
+        <label>
+          <input type="checkbox" name="categories" value="{{ category.id }}"> {{ category.name }}
+        </label>
+         {% endfor %}
+      </div>
+
+        <p style="color:red">{{ errors }}</p>
+    {{ wtf.form_field(form.name) }}
+    <div class="form-group">
+        <label class="control-label" for="name">主演</label>
+          <input class="form-control" id="actors" name="actors" required="" type="text" value="">
+    </div>
+    {{ wtf.form_field(form.year) }}
+    {{ wtf.form_field(form.pic) }}
+    {{ wtf.form_field(form.info) }}
+    {{ wtf.form_field(form.submit) }}
+    </form>
+
+{% endblock %}

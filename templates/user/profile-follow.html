@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% from "macro.html" import get_avatar,profile_tabs,user_profile with context %}
+{% from "macro.html" import follow_btn with context %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% from "macro.html" import message_list %}
+
+{% block title %}
+    {{ user.name }} - {{ super() }}
+{% endblock %}
+
+{% block container %}
+    <div class="col-md-2">
+        {{ user_profile(user,current_user) }}
+    </div>
+    <div class="col-md-10" style="padding-right:0;background:white;padding-top:15px">
+      <!-- Nav tabs -->
+      {{ profile_tabs(tab) }}
+
+
+        <div role="tabpanel" class="tab-pane" id="profile">
+            <div class="row">
+                <h5 class="panel-heading head-line">关注的电影</h5>
+                <div>
+                    {% for movie in follow_movies %}
+                        <a href="/movie/{{ movie.id }}" class="col-md-2">
+                            <img src="/static/img/mainpic/{{ movie.pic }}" class="shadowed" style="height: 151px;overflow: hidden">
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <h5 class="panel-heading head-line">关注的演员</h5>
+                <div>
+                    {% for actor in follow_actors %}
+                        <a href="/actor/{{ actor.id }}" class="thumbnails col-md-1">
+                            <img src="{{ actor.pic }}" class="img-circle" style="height: 64px;overflow: hidden">
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

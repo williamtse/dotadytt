@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% from "macro.html" import follow_btn, celebrity_movies with context %}
+{% from "movie/movie-list.html" import list with context %}
+
+{% block styles %}
+{{ super() }}
+    <link href="/css/movie.css" rel="stylesheet">
+
+	
+{% endblock %}
+
+{% block title %}
+    {{ celebrity.name }}|{{ super() }}
+{% endblock %}
+
+{% block container %}
+    <h3 class="page-header">{{ celebrity.name }}</h3>
+    <div class="col-md-9" style="border-right: 1px solid #dddddd">
+        {% if celebrity.pic %}
+        <img src="/img/celebrity/{{ celebrity.pic }}" style="float: left;margin: 0 15px 15px 0;">
+        {% else %}
+        <img src="/img/celebrity-default-medium.png" style="float: left;margin: 0 15px 15px 0;">
+        {% endif %}
+        <p><span class="info-label">性别：</span>{{ celebrity.sex }}</p>
+        <p><span class="info-label">星座：</span>{{ celebrity.horoscope }}</p>
+        <p><span class="info-label">职业：</span>{{ celebrity.jobs }}</p>
+        <p><span class="info-label">出生日期：</span>{{ celebrity.birthday }}</p>
+        <p><span class="info-label">出生地：</span>{{ celebrity.born }}</p>
+        <p><span class="info-label">IMDb:</span><a href="http://www.imdb.com/name/{{celebrity.imdbid}}">{{ celebrity.imdbid }}</a></p>
+
+        <p>
+            <label>影人简介：</label><br>
+            {{ celebrity.info | safe }}
+        </p>
+        <div style="clear:both"></div>
+
+        <h3 class="page-header">影人作品（共{{celebrity.movies|count}}部）</h3>
+
+        {{ celebrity_movies('celebrity',celebrity) }}
+    </div>
+    <div class="col-md-3">
+{{ follow_btn(celebrity.imdbid, 'celebrity') }}
+    </div>
+
+
+{% endblock %}
+

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block container %}
+    <fieldset>
+        <legend>{{ current_user.username }}的个人信息</legend>
+        <div id="userleft" class="col-md-3">
+            <ul class="list-group">
+              <li class="list-group-item"><a href="/edit-profile">编辑个人信息</a></li>
+              <li class="list-group-item">Dapibus ac facilisis in</li>
+              <li class="list-group-item">Morbi leo risus</li>
+              <li class="list-group-item">Porta ac consectetur ac</li>
+              <li class="list-group-item">Vestibulum at eros</li>
+            </ul>
+        </div>
+        <div id="userright" class="col-md-9">
+           {% block user_right %}
+            {% endblock %}
+        </div>
+    </fieldset>
+{% endblock %}
+
+
+
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(function(){
+       $('.chosebtn').click(function(e){
+            e.preventDefault();
+            $(this).tab('show');
+            $(this).addClass('active');
+            $(this).siblings('.chosebtn').removeClass('active');
+       }) ;
+    });
+    </script>
+{% endblock %}
